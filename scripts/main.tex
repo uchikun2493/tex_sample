@@ -1,0 +1,104 @@
+% ================================================
+% setting
+% ================================================
+
+% upLaTeXの環境でコンパイルの場合は"u"がつく
+% \documentclass[uplatex, 12pt, a4j, fleqn]{ujreport}
+\documentclass[uplatex, 12pt, a4j, fleqn]{ujbook}
+
+% begin.texに使用するパッケージなどの記述
+\input{./etc/begin}
+
+% 行数設定など行う
+\makeatletter
+\def\mojiparline#1{
+    \newcounter{mpl}
+    \setcounter{mpl}{#1}
+    \@tempdima=\linewidth
+    \advance\@tempdima by-\value{mpl}zw
+    \addtocounter{mpl}{-1}
+    \divide\@tempdima by \value{mpl}
+    \advance\kanjiskip by\@tempdima
+    \advance\parindent by\@tempdima
+}
+\makeatother
+\def\linesparpage#1{
+    \baselineskip=\textheight
+    \divide\baselineskip by #1
+}
+
+% 余白の設定
+% A4(297mm)
+\setlength{\textheight}{227truemm}
+\setlength{\headheight}{20truemm}
+\setlength{\topskip}{20truemm}
+\setlength{\headsep}{15truemm}
+\setlength{\footskip}{0truemm}
+\addtolength{\topmargin}{-1truein}
+
+% セクションの番号付けの深さを設定
+% 例えば3を指定すると、\subsubsubsectionまでは番号がつく
+\setcounter{secnumdepth}{5}
+
+% 図の保存場所
+\graphicspath{{../fig/}}
+
+% ================================================
+% Document (start)
+% ================================================
+
+% ドキュメントの開始
+\begin{document}
+
+% 一行あたり文字数の指定
+\mojiparline{35}
+% 1ページあたり行数の指定
+\linesparpage{27}
+
+
+% タイトルの出力
+% title.texを読み込んでる書いておく
+\input{./etc/title}
+
+% 図番号の後を":"をスペースに置き換える
+% お好みで設定
+\captionsetup{labelsep=space}
+\renewcommand{\include}[1]{}
+\renewcommand\documentclass[2][]{}
+
+% 目次用にページ番号の付け方を"roman"に変えておく
+\pagenumbering{roman}
+% 目次の出力
+\tableofcontents
+% 図目次の表示
+\listoffigures
+% 表目次の表示
+\listoftables
+
+% 各チャプター分けしたファイルを読み込む
+\input{./chapter/chapter1}
+\input{./chapter/chapter2}
+
+% bibtex 
+% {}内を{junsrt}にしないと引用順番にならないので注意
+\bibliographystyle{junsrt}
+% 関連図書　→　参考文献に変更する
+% jbook.clsのthebibliographyは、関連図書と出力するので、
+% 		\renewcommand{\bibname}{参考文献}
+%  をプレアンブルに入れることで、"参考文献"と変わります。jarticleの場合は、
+ % 		\renewcommand{\refname}{参考}
+
+\renewcommand{\bibname}{参考文献}
+\bibliography{./etc/ref}
+% 以下のように複数ある場合は複数指定できる
+% \bibliography{./etc/ref,./etc/ref_2}
+
+% 謝辞
+\input{./etc/acknowledgments}
+
+% ================================================
+% Document (end)
+% ================================================
+
+\end{document}
+

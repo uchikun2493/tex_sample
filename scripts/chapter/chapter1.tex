@@ -1,0 +1,103 @@
+
+% ====================================
+% chapter 1
+% ====================================
+
+\chapter{TeXのテンプレートを作ってみました}
+
+% ページ番号をリセット
+\setcounter{page}{1}
+% ページ番号の付け方をromanからarabicに変えておく
+\pagenumbering{arabic}
+
+
+\section{はじめに}
+TeXのテンプレートを作ってみました.
+まずはじめ，作成者の使用上コマンドは\verb|¥|ではなく\verb|\|にしています.
+理由はMac導入時のデフォルトであったこととかっこいいからです.
+お手数ですが，最初にメモ帳などなんでもいいので各ファイルの\verb|\|を\verb|¥|に置換してください.
+気が向いたら\verb|¥|バージョンも作ります.
+
+コンパイル環境はなんでもいいですが，latexmkというものを使うと便利です.
+普通TeXはラベルをひも付けたりなどの関係で複数回コンパイルが必要になりますが，それらを一括でやってくれます.
+本記事ではlatexmkを使ったコンパイル環境を構築します.
+
+あと，ささやかな注意事項ですが，ファイル名は半角文字のみ使用をお願いします．
+
+\section{TeXのインストールと設定}
+
+Macの場合はMacTeXを入れるだけでok.
+WinやLinuxの人はTeX Liveを入れれば間違いないみたいです.
+
+latexmkは".latexmkrc"という設定ファイルを作る必要があります.
+頭にドットがついているのに注意してください.
+作成先はHomeディレクトリか，作業ディレクトリに作れば大丈夫ですが，作業用のディレクトリがおすすめです.
+このサンプルでは既に作成済ですが，簡単に中身に触れておきます．
+
+今回は".latexmk"に以下を書き込んでいます（正確には若干違いますが、直すのが面倒）.
+
+\begin{verbatim}
+#!/usr/bin/env perl
+$latex            = 'uplatex -synctex=1 -halt-on-error';
+$latex_silent     = 'uplatex -synctex=1 -halt-on-error -interaction=batchmode';
+$bibtex           = 'upbibtex';
+$biber            = 'biber --bblencoding=utf8 -u -U --output_safechars';
+$dvipdf           = 'dvipdfmx %O -o %D %S';
+$makeindex        = 'mendex %O -o %D %S';
+$max_repeat       = 5;
+$pdf_mode         = 3;
+\end{verbatim}
+
+ここで注意なのが，タイプセットの環境がuplatexとplatexの人がいます.
+ここではuplatexを使っていますが，もしplatexを使う場合は以下のように書き換えてください.
+
+\begin{verbatim}
+#!/usr/bin/env perl
+$latex            = 'platex -synctex=1 -halt-on-error';
+$latex_silent     = 'platex -synctex=1 -halt-on-error -interaction=batchmode';
+$bibtex           = 'pbibtex';
+$biber            = 'biber --bblencoding=utf8 -u -U --output_safechars';
+$dvipdf           = 'dvipdfmx %O -o %D %S';
+$makeindex        = 'mendex %O -o %D %S';
+$max_repeat       = 5;
+$pdf_mode         = 3;
+\end{verbatim}
+各設定の意味や他の設定については各自で検索していただければと思います.
+
+設定を書き込んだら，ターミナル上でTeXのソースファイルのある作業ディレクトリまで移動し，次のコマンドを打つとPDFが作成されます.
+\begin{verbatim}
+latexmk main.tex
+\end{verbatim}
+main.texは各自のソースファイル名へ適宜読み替えてください.
+上記コマンドを毎回呼び出すのは面倒なので，ファイルが変更されるたびにコンパイルできるよう引数を与えます.
+\begin{verbatim}
+latexmk -pvc main.tex
+\end{verbatim}
+これで幸せなTeXコンパイル環境の出来上がりです.
+
+コンパイルするとたくさんの中間ファイルたちが生成されて見た目や管理上邪魔になります．
+ここで朗報です．
+Bashなどが利用できるMacやLinux環境のみなさんには朗報なんです．
+本サンプルの直下に"shell"というフォルダが見えますでしょうか．
+"shell"内には3つの.shの拡張子でファイルがあり，それぞれ以下のような効果を発揮してしまうのです．
+スーパー執筆モードになっているときはchange2build\_loopd\_and\_rm\_files.shを裏で実行しておくと便利です．
+\begin{description}
+    \item[rm\_files.sh]\mbox{}\\
+        生成された中間ファイルの削除
+    \item[build\_and\_rm\_files.sh]\mbox{}\\
+        一回だけコンパイルしてrm\_files.shを実行
+    \item[change2build\_loopd\_and\_rm\_files.sh]\mbox{}\\
+        変更を監視して自動コンパイルし，終了時にrm\_files.shを実行
+\end{description}
+なお，Winは知りません．
+
+\section{TeXのエディタ}
+
+TeXは拡張子こそ.texになっていますが，実際に編集を行うのは文章が書けるソフトであればなんでもいいです.
+極端な話し，メモ帳などでも大丈夫です.
+しかし，編集するに当たって補完機能やコマンドのハイライトなどしてくれると作業効率も上がりますので，TeXShopやTeXWorks，拡張機能をインストールできるエディタ(AtomやVSCode)などの利用をお勧めします.
+最強のエディタはVimと信じて疑っていない私ですが，作業効率重視でいきましょう．
+
+ちなみにlatexmkではプレビュー用のソフトの設定も書き込めるので適宜Webで調べてみてください.
+
+
